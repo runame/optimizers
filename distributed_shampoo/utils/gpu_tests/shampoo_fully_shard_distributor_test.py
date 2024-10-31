@@ -22,7 +22,7 @@ from distributed_shampoo.shampoo_types import (
 from distributed_shampoo.tests.shampoo_test_utils import construct_training_problem
 
 from torch import nn
-from torch.distributed._composable.fsdp import fully_shard
+from torch.distributed._composable.fsdp.fully_shard import fully_shard
 from torch.distributed.tensor import DTensor
 from torch.optim.optimizer import ParamsT
 from torch.testing._internal.common_distributed import skip_if_lt_x_gpu
@@ -214,7 +214,7 @@ class ShampooFullyShardDistributorTest(FSDPTest):
             distributed_config=distributed_config,
         )
 
-    @skip_if_lt_x_gpu(2)
+    @skip_if_lt_x_gpu(2)  # type: ignore[misc]
     def test_fully_shard_shampoo_against_default_shampoo(self) -> None:
         fully_shard_config = FullyShardShampooConfig()
         ShampooFullyShardDistributorTest._test_two_configs(

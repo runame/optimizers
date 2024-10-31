@@ -126,7 +126,7 @@ class DDPDistributor(DistributorInterface):
 
     # NOTE: Remove this function once PT2 supports all_gather with functional collective
     @torch.no_grad()
-    @torch.compiler.disable
+    @torch.compiler.disable  # type: ignore[misc]
     def all_gather_into_tensor(self) -> None:
         dist.all_gather_into_tensor(
             self._global_dist_buffer,

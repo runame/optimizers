@@ -185,7 +185,7 @@ class AbstractTest:
             with (
                 contextlib.nullcontext()
                 if has_blocked_params
-                else self.assertRaisesRegex(
+                else self.assertRaisesRegex(  # type: ignore[no-untyped-call]
                     AssertionError,
                     re.escape("Some workers have no parameters to work on."),
                 )

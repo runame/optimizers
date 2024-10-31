@@ -54,3 +54,6 @@ py-modules = [
 
 [tool.usort]
 first_party_detection = false
+
+[tool.mypy]
+untyped_calls_exclude = ["torch", "torchvision"]

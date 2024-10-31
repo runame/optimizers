@@ -19,7 +19,7 @@ from distributed_shampoo.utils.shampoo_fsdp_utils import (
     parse_fully_shard_params,
 )
 from torch import distributed as dist, nn
-from torch.distributed._composable.fsdp import fully_shard
+from torch.distributed._composable.fsdp.fully_shard import fully_shard
 from torch.distributed.device_mesh import init_device_mesh
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP, ShardingStrategy
 from torch.nn.parameter import Parameter
@@ -45,7 +45,7 @@ class CompileFSDPParameterMetadataTest(FSDPTest):
     def world_size(self) -> int:
         return 2
 
-    @skip_if_lt_x_gpu(2)
+    @skip_if_lt_x_gpu(2)  # type: ignore[misc]
     def test_compile_fsdp_parameter_metadata(self) -> None:
         model, params = _create_model_and_params()
         fsdp_model = FSDP(model, use_orig_params=True)
@@ -95,7 +95,7 @@ class CompileFSDPParameterMetadataTest(FSDPTest):
             actual_fsdp_parameter_metadata, expected_fsdp_parameter_metadata
         )
 
-    @skip_if_lt_x_gpu(2)
+    @skip_if_lt_x_gpu(2)  # type: ignore[misc]
     def test_compile_fsdp_parameter_metadata_with_no_flat_param(self) -> None:
         model, params = _create_model_and_params()
         # Ignored all params in FSDP so there is no flat_param field in FSDP module.
@@ -115,7 +115,7 @@ class ParseFSDPParamsTest(FSDPTest):
     def world_size(self) -> int:
         return 4
 
-    @skip_if_lt_x_gpu(4)
+    @skip_if_lt_x_gpu(4)  # type: ignore[misc]
     def test_parse_fsdp_params(self) -> None:
         HYBRID_SHARDING_STRATEGIES_TO_EXPECTED_KEYS = {  # type: ignore[var-annotated]
             ShardingStrategy.HYBRID_SHARD: (
@@ -204,7 +204,7 @@ class ParseFSDPParamsTest(FSDPTest):
                 self.assertEqual(actual_hsdp_keys, expected_hsdp_keys)
                 self.assertEqual(actual_other_keys, expected_other_keys)
 
-    @skip_if_lt_x_gpu(4)
+    @skip_if_lt_x_gpu(4)  # type: ignore[misc]
     def test_parse_fully_shard_params(self) -> None:
         mesh_1d = init_device_mesh("cuda", (self.world_size,))
         fully_shard_module, _ = _create_model_and_params((16, 8, 1))

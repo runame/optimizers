@@ -41,7 +41,7 @@ class ConvNet(nn.Module):
     """
 
     def __init__(
-        self, height: int, width: int, channels: int, use_combined_linear=False
+        self, height: int, width: int, channels: int, use_combined_linear: bool = False
     ):
         super(ConvNet, self).__init__()
         self.conv = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
@@ -56,5 +56,6 @@ class ConvNet(nn.Module):
             10,
         )
 
-    def forward(self, x):
-        return self.linear(torch.flatten(self.activation(self.conv(x)), 1))
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        out: torch.Tensor = self.linear(torch.flatten(self.activation(self.conv(x)), 1))
+        return out

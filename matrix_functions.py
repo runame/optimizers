@@ -85,7 +85,7 @@ def matrix_inverse_root(
 
     # check if matrix is scalar
     if torch.numel(A) == 1:
-        return (A + epsilon) ** torch.as_tensor(-1.0 / root)
+        return torch.as_tensor((A + epsilon) ** (-1.0 / root))
 
     # check matrix shape
     if len(A.shape) != 2:

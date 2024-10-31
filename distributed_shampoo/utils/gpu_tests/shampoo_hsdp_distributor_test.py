@@ -203,7 +203,7 @@ class ShampooHSDPDistributorTest(FSDPTest):
             distributed_config=distributed_config,
         )
 
-    @skip_if_lt_x_gpu(4)
+    @skip_if_lt_x_gpu(4)  # type: ignore[misc]
     def test_hsdp_shampoo_against_default_shampoo(self) -> None:
         mesh_2d = init_device_mesh("cuda", (2, 2))
         for num_trainers_per_group, (
@@ -247,7 +247,7 @@ class ShampooHSDPDistributorTest(FSDPTest):
                     device=torch.device("cuda"),
                 )
 
-    @skip_if_lt_x_gpu(4)
+    @skip_if_lt_x_gpu(4)  # type: ignore[misc]
     def test_hsdp_shampoo_block_index(self) -> None:
         mesh_2d = init_device_mesh("cuda", (2, 2))
         hsdp_config = HSDPShampooConfig(
@@ -280,7 +280,7 @@ class ShampooHSDPDistributorTest(FSDPTest):
                     matches += 1
         self.assertGreater(matches, 0)
 
-    @skip_if_lt_x_gpu(4)
+    @skip_if_lt_x_gpu(4)  # type: ignore[misc]
     def test_number_of_trainers_per_group_out_of_range(self) -> None:
         mesh_2d = init_device_mesh("cuda", (2, 2))
         hsdp_config = HSDPShampooConfig(
@@ -289,7 +289,7 @@ class ShampooHSDPDistributorTest(FSDPTest):
             num_trainers_per_group=3,
         )
 
-        with self.assertRaisesRegex(
+        with self.assertRaisesRegex(  # type: ignore[no-untyped-call]
             ValueError,
             re.escape(
                 "Invalid number of trainers per group: 3. Must be between [1, 2] or set to -1."
@@ -303,7 +303,7 @@ class ShampooHSDPDistributorTest(FSDPTest):
                 device=torch.device("cuda"),
             )
 
-    @skip_if_lt_x_gpu(4)
+    @skip_if_lt_x_gpu(4)  # type: ignore[misc]
     def test_dist_is_initialized(self) -> None:
         mesh_2d = init_device_mesh("cuda", (2, 2))
         hsdp_config = HSDPShampooConfig(
@@ -313,7 +313,7 @@ class ShampooHSDPDistributorTest(FSDPTest):
 
         with mock.patch.object(
             torch.distributed, "is_initialized", return_value=False
-        ), self.assertRaisesRegex(
+        ), self.assertRaisesRegex(  # type: ignore[no-untyped-call]
             RuntimeError,
             re.escape("HSDPDistributor needs torch.distributed to be initialized!"),
         ):
@@ -325,7 +325,7 @@ class ShampooHSDPDistributorTest(FSDPTest):
                 device=torch.device("cuda"),
             )
 
-    @skip_if_lt_x_gpu(4)
+    @skip_if_lt_x_gpu(4)  # type: ignore[misc]
     def test_incompatible_replicated_group_size_and_num_trainers_per_group(
         self,
     ) -> None:
@@ -339,7 +339,7 @@ class ShampooHSDPDistributorTest(FSDPTest):
         # Hijack the DeviceMesh.size() method to return 4 instead of 2 to bypass the check of num_trainers_per_group.
         with mock.patch.object(
             torch.distributed.device_mesh.DeviceMesh, "size", return_value=4
-        ), self.assertRaisesRegex(
+        ), self.assertRaisesRegex(  # type: ignore[no-untyped-call]
             ValueError,
             re.escape(
                 "distributed_config.num_trainers_per_group=3 must divide self._replicated_group_size=4!"

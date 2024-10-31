@@ -6,7 +6,7 @@ format:
 	@ruff format
 
 type-check:
-	@mypy .
+	@mypy --strict .
 
 test:
 	@python3 -m unittest discover -s tests/ -p "*_test.py"

@@ -63,7 +63,7 @@ class GraftingType(enum.Enum):
 
 
 ###### ARGPARSER ######
-def enum_type_parse(s: str, enum_type: enum.Enum):
+def enum_type_parse(s: str, enum_type: enum.Enum):  # type: ignore[no-untyped-def]
     try:
         return enum_type[s]  # type: ignore[index]
     except KeyError:
@@ -74,13 +74,13 @@ def enum_type_parse(s: str, enum_type: enum.Enum):
 
 class Parser:
     @staticmethod
-    def get_args():
+    def get_args() -> argparse.Namespace:
         parser = argparse.ArgumentParser(description="Arguments for Shampoo run.")
 
         # Arguments for training script.
         parser.add_argument(
             "--optimizer-type",
-            type=lambda t: enum_type_parse(t, OptimizerType),
+            type=lambda t: enum_type_parse(t, OptimizerType),  # type: ignore[arg-type]
             help="Optimizer type.",
         )
         parser.add_argument("--batch-size", type=int, default=128, help="Batch size.")
@@ -199,7 +199,7 @@ class Parser:
         # Arguments for grafting.
         parser.add_argument(
             "--grafting-type",
-            type=lambda t: enum_type_parse(t, GraftingType),
+            type=lambda t: enum_type_parse(t, GraftingType),  # type: ignore[arg-type]
             default=GraftingType.SGD,
             help="Grafted method for Shampoo.",
         )
@@ -219,37 +219,37 @@ class Parser:
         # Arguments for mixed-precision.
         parser.add_argument(
             "--computation-dtype",
-            type=lambda t: enum_type_parse(t, DType),
+            type=lambda t: enum_type_parse(t, DType),  # type: ignore[arg-type]
             default=DType.FP32,
             help="Data type for all computation in Shampoo.",
         )
         parser.add_argument(
             "--factor-matrix-dtype",
-            type=lambda t: enum_type_parse(t, DType),
+            type=lambda t: enum_type_parse(t, DType),  # type: ignore[arg-type]
             default=DType.FP32,
             help="Data type for storing Shampoo factor matrices.",
         )
         parser.add_argument(
             "--inv-factor-matrix-dtype",
-            type=lambda t: enum_type_parse(t, DType),
+            type=lambda t: enum_type_parse(t, DType),  # type: ignore[arg-type]
             default=DType.FP32,
             help="Data type for storing Shampoo inverse factor matrices.",
         )
         parser.add_argument(
             "--filtered-grad-dtype",
-            type=lambda t: enum_type_parse(t, DType),
+            type=lambda t: enum_type_parse(t, DType),  # type: ignore[arg-type]
             default=DType.FP32,
             help="Data type for storing filtered gradients.",
         )
         parser.add_argument(
             "--momentum-dtype",
-            type=lambda t: enum_type_parse(t, DType),
+            type=lambda t: enum_type_parse(t, DType),  # type: ignore[arg-type]
             default=DType.FP32,
             help="Data type for storing momentum states.",
         )
         parser.add_argument(
             "--grafting-state-dtype",
-            type=lambda t: enum_type_parse(t, DType),
+            type=lambda t: enum_type_parse(t, DType),  # type: ignore[arg-type]
             default=DType.FP32,
             help="Data type for storing grafting preconditioners.",
         )
@@ -257,7 +257,7 @@ class Parser:
         # Arguments for DDP Shampoo.
         parser.add_argument(
             "--communication-dtype",
-            type=lambda t: enum_type_parse(t, CommunicationDType),
+            type=lambda t: enum_type_parse(t, CommunicationDType),  # type: ignore[arg-type]
             default=CommunicationDType.FP32,
             help="Communication dtype for Shampoo.",
         )
@@ -311,13 +311,13 @@ class Parser:
 ###### METRICS CLASSES ######
 class Metrics(ABC):
     @abstractmethod
-    def log(self): ...
+    def log(self) -> None: ...
 
     @abstractmethod
-    def reset(self): ...
+    def reset(self) -> None: ...
 
     @abstractmethod
-    def update(self, loss: torch.Tensor): ...
+    def update(self, loss: torch.Tensor) -> None: ...
 
 
 class LossMetrics(Metrics):
@@ -342,7 +342,7 @@ class LossMetrics(Metrics):
             self._global_window_loss = torch.tensor(0.0, device=device)
             self._global_lifetime_loss = torch.tensor(0.0, device=device)
 
-    def reset(self):
+    def reset(self) -> None:
         self._epoch = 0
         self._iteration = 0
         self._window_losses = []
@@ -350,7 +350,7 @@ class LossMetrics(Metrics):
         self._accumulated_loss = torch.tensor(0.0, device=self._device)
         self._lifetime_loss = torch.tensor(0.0, device=self._device)
 
-    def update(self, loss: torch.Tensor):
+    def update(self, loss: torch.Tensor) -> None:
         self._iteration += 1
         self._window_losses.append(loss)
         if len(self._window_losses) > self._window_size:
@@ -359,12 +359,12 @@ class LossMetrics(Metrics):
         self._accumulated_loss += loss
         self._lifetime_loss = self._accumulated_loss / self._iteration
 
-    def log(self):
+    def log(self) -> None:
         logger.info(
             f"Epoch: {self._epoch} | Iteration: {self._iteration} | Local Lifetime Loss: {self._lifetime_loss} | Local Window Loss: {self._window_loss}"
         )
 
-    def update_global_metrics(self):
+    def update_global_metrics(self) -> None:
         if dist.is_initialized() and self._world_size > 1:
             self._global_window_loss = self._window_loss / self._world_size
             self._global_lifetime_loss = self._lifetime_loss / self._world_size
@@ -373,7 +373,7 @@ class LossMetrics(Metrics):
         else:
             pass
 
-    def log_global_metrics(self):
+    def log_global_metrics(self) -> None:
         if self._world_size > 1:
             logger.info(
                 f"Epoch: {self._epoch} | Iteration: {self._iteration} | Global Lifetime Loss: {self._global_lifetime_loss} | Global Window Loss: {self._global_window_loss}"
@@ -504,7 +504,7 @@ def instantiate_grafting_config(
 ###### DATA LOADER ######
 def get_data_loader_and_sampler(
     data_path: str, world_size: int, rank: int, local_batch_size: int
-) -> tuple[
+) -> tuple[  # type: ignore[type-arg]
     torch.utils.data.DataLoader, torch.utils.data.distributed.DistributedSampler
 ]:
     # instantiate data loader
@@ -514,7 +514,7 @@ def get_data_loader_and_sampler(
     dataset = datasets.CIFAR10(
         data_path, train=True, download=True, transform=transform
     )
-    sampler: torch.utils.data.distributed.DistributedSampler = (
+    sampler: torch.utils.data.distributed.DistributedSampler = (  # type: ignore[type-arg]
         torch.utils.data.distributed.DistributedSampler(
             dataset, num_replicas=world_size, rank=rank, shuffle=True
         )
@@ -531,7 +531,7 @@ def get_data_loader_and_sampler(
 
 
 ###### SET UP ######
-def set_seed(seed: int):
+def set_seed(seed: int) -> None:
     # set seed for reproducibility
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -573,14 +573,14 @@ def train_model(
     model: nn.Module,
     world_size: int,
     loss_function: nn.Module,
-    sampler: torch.utils.data.Sampler,
-    data_loader: torch.utils.data.DataLoader,
+    sampler: torch.utils.data.Sampler,  # type: ignore[type-arg]
+    data_loader: torch.utils.data.DataLoader,  # type: ignore[type-arg]
     optimizer: torch.optim.Optimizer,
     device: torch.device,
     epochs: int = 1,
     window_size: int = 100,
     local_rank: int = 0,
-):
+) -> tuple[torch.Tensor, torch.Tensor, int]:
     # initialize metrics
     metrics = LossMetrics(window_size=window_size, device=device, world_size=world_size)
 

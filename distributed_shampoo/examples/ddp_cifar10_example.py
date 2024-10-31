@@ -157,9 +157,11 @@ if __name__ == "__main__":
                 key_to_param=model.named_parameters()
             ),
         }
-        dist_checkpoint.load_state_dict(
+        dist_checkpoint.state_dict_loader.load_state_dict(
             state_dict=state_dict,
-            storage_reader=dist_checkpoint.FileSystemReader(args.checkpoint_dir),
+            storage_reader=dist_checkpoint.filesystem.FileSystemReader(
+                args.checkpoint_dir
+            ),
         )
 
         model.load_state_dict(state_dict["model"])
@@ -189,9 +191,11 @@ if __name__ == "__main__":
                 key_to_param=model.named_parameters()
             ),
         }
-        dist_checkpoint.save_state_dict(
+        dist_checkpoint.state_dict_saver.save_state_dict(
             state_dict=state_dict,
-            storage_writer=dist_checkpoint.FileSystemWriter(args.checkpoint_dir),
+            storage_writer=dist_checkpoint.filesystem.FileSystemWriter(
+                args.checkpoint_dir
+            ),
         )
 
     # clean up process group

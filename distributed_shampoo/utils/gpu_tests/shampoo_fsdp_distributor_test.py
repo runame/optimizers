@@ -193,7 +193,7 @@ class ShampooFSDPDistributorTest(FSDPTest):
             distributed_config=distributed_config,
         )
 
-    @skip_if_lt_x_gpu(2)
+    @skip_if_lt_x_gpu(2)  # type: ignore[misc]
     def test_fsdp_shampoo_against_default_shampoo(self) -> None:
         fsdp_config = FSDPShampooConfig(param_to_metadata={})
         ShampooFSDPDistributorTest._test_two_configs(
@@ -212,7 +212,7 @@ class ShampooFSDPDistributorTest(FSDPTest):
             device=torch.device("cuda"),
         )
 
-    @skip_if_lt_x_gpu(2)
+    @skip_if_lt_x_gpu(2)  # type: ignore[misc]
     def test_fsdp_shampoo_block_index(self) -> None:
         fsdp_config = FSDPShampooConfig(param_to_metadata={})
         model_factory = ShampooFSDPDistributorTest._model_factory(fsdp_config)

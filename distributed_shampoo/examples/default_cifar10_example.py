@@ -12,6 +12,8 @@ import os
 from typing import Tuple
 
 import torch
+import torch.utils
+import torch.utils.data
 
 from distributed_shampoo.examples.trainer_utils import (
     get_data_loader_and_sampler,
@@ -38,7 +40,7 @@ os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
 def train_default_model(
     model: nn.Module,
     loss_function: nn.Module,
-    data_loader: torch.utils.data.DataLoader,
+    data_loader: torch.utils.data.DataLoader,  # type: ignore[type-arg]
     optimizer: torch.optim.Optimizer,
     device: torch.device,
     epochs: int = 1,

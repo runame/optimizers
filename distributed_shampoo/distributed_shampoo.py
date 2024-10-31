@@ -804,7 +804,7 @@ class DistributedShampoo(torch.optim.Optimizer):
             )
 
     @torch.no_grad()
-    @torch.compiler.disable
+    @torch.compiler.disable  # type: ignore[misc]
     def _compute_root_inverse(
         self, state_lists: Dict[str, Any], compute_root_inverse: bool
     ) -> None:
@@ -814,7 +814,7 @@ class DistributedShampoo(torch.optim.Optimizer):
                 self._compute_and_log_root_inverse_residuals()
 
     @torch.no_grad()
-    @torch.compiler.disable
+    @torch.compiler.disable  # type: ignore[misc]
     def _precondition_and_grafting(
         self,
         state_lists: Dict[str, Any],
@@ -826,7 +826,7 @@ class DistributedShampoo(torch.optim.Optimizer):
         # If the step count is less than start_preconditioning_step, then we use the grafting method.
         # Assumes that the step state is consistent across all parameters.
         if use_grafting_method:
-            masked_blocked_search_directions = state_lists[
+            masked_blocked_search_directions: Tuple[torch.Tensor, ...] = state_lists[
                 GRAFTING_PRECONDITIONER_LIST
             ].precondition(
                 masked_grad_list=masked_filtered_grad_list,
@@ -842,7 +842,7 @@ class DistributedShampoo(torch.optim.Optimizer):
 
             # Apply grafting.
             if grafting_config_not_none:
-                grafting_norm_list = torch._foreach_norm(
+                grafting_norm_list: Tuple[torch.Tensor, ...] = torch._foreach_norm(
                     state_lists[GRAFTING_PRECONDITIONER_LIST].precondition(
                         masked_grad_list=masked_filtered_grad_list,
                     )

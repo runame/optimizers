@@ -7,6 +7,7 @@ LICENSE file in the root directory of this source tree.
 
 """
 
+import argparse
 import logging
 import os
 from typing import Optional, Tuple
@@ -14,6 +15,8 @@ from typing import Optional, Tuple
 import torch
 import torch.distributed as dist
 import torch.distributed.checkpoint as dist_checkpoint
+import torch.utils
+import torch.utils.data
 
 from distributed_shampoo.distributed_shampoo import DistributedShampoo
 from distributed_shampoo.examples.trainer_utils import (
@@ -29,7 +32,7 @@ from distributed_shampoo.examples.trainer_utils import (
 from distributed_shampoo.shampoo_types import FullyShardShampooConfig, PrecisionConfig
 
 from torch import nn
-from torch.distributed._composable.fsdp import fully_shard
+from torch.distributed._composable.fsdp.fully_shard import fully_shard
 
 logging.basicConfig(
     format="[%(filename)s:%(lineno)d] %(levelname)s: %(message)s",
@@ -50,8 +53,8 @@ def train_fully_shard_model(
     model: nn.Module,
     world_size: int,
     loss_function: nn.Module,
-    sampler: torch.utils.data.Sampler,
-    data_loader: torch.utils.data.DataLoader,
+    sampler: torch.utils.data.Sampler,  # type: ignore[type-arg]
+    data_loader: torch.utils.data.DataLoader,  # type: ignore[type-arg]
     optimizer: torch.optim.Optimizer,
     device: torch.device,
     epochs: int = 1,
@@ -96,9 +99,9 @@ def train_fully_shard_model(
                 key_to_param=model.named_parameters()
             ),
         }
-        dist_checkpoint.save_state_dict(
+        dist_checkpoint.state_dict_saver.save_state_dict(
             state_dict=state_dict,
-            storage_writer=dist_checkpoint.FileSystemWriter(checkpoint_dir),
+            storage_writer=dist_checkpoint.filesystem.FileSystemWriter(checkpoint_dir),
         )
 
     return (
@@ -108,7 +111,9 @@ def train_fully_shard_model(
     )
 
 
-def create_model_and_optimizer_and_loss_fn(args, device):
+def create_model_and_optimizer_and_loss_fn(
+    args: argparse.Namespace, device: torch.device
+) -> Tuple[nn.Module, torch.optim.Optimizer, nn.Module]:
     # instantiate model and loss function
     model, loss_function = get_model_and_loss_fn(device)
 

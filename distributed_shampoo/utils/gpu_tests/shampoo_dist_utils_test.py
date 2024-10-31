@@ -65,7 +65,7 @@ class ShampooDistUtilsTest(DTensorTestBase):
         # DeviceMesh.__init__() should not be called due to caching, and the output of
         # get_device_mesh() should be the same as the previous one.
         with mock.patch.object(
-            shampoo_dist_utils.DeviceMesh,
+            shampoo_dist_utils.DeviceMesh,  # type: ignore[attr-defined]
             "__init__",
         ) as mock_device_mesh_init:
             device_mesh = get_device_mesh(

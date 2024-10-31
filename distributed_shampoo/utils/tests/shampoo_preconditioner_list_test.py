@@ -173,7 +173,7 @@ class AdagradPreconditionerListTest(PreconditionerListTest):
 
     def _instantiate_preconditioner_list(
         self, **kwargs: Any
-    ) -> AdagradPreconditionerList:  # type: ignore[override]
+    ) -> AdagradPreconditionerList:
         kwargs = {"beta2": 1.0, "epsilon": 0.0, "use_bias_correction": True} | kwargs
         return AdagradPreconditionerList(
             block_list=self._block_list,
