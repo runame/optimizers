@@ -215,7 +215,7 @@ class DistributedShampoo(torch.optim.Optimizer):
         updated every iteration while the eigenbasis of Shampoo's preconditioner is only computed every `precondition_frequency` steps.
         Alternatively, this can be seen as running Adam in the eigenbasis of Shampoo's preconditioner.
 
-        When setting `preconditioner_computation_config` as an instance of EigenvalueCorrectionConfig, there is typically no need to use learning
+        When setting `preconditioner_computation_config` as an instance of `EigenvalueCorrectionConfig`, there is typically no need to use learning
         rate grafting from Adam (`grafting_config=None`) and, when they are available, Adam's optimal `lr`, `betas`, and `weight_decay` should be
         a good starting point for further tuning. However, the case of `beta2=1.0`, i.e. an AdaGrad-like accumulation, has not been explored yet.
         Also, in settings where Shampoo would usually graft its learning rate from SGD, grafting might still be beneficial.
@@ -233,7 +233,7 @@ class DistributedShampoo(torch.optim.Optimizer):
         momentum (float): Momentum parameter. (Default: 0.)
         dampening (float): Dampening parameter for momentum. (Default: 0.)
         weight_decay (float): Weight decay (L2 penalty). (Default: 0.)
-        max_preconditioner_dim (int): Maximum preconditioner dimensio. (Default: 1024)
+        max_preconditioner_dim (int): Maximum preconditioner dimension. (Default: 1024)
         precondition_frequency (int): Frequency of updating all components of the preconditioner.
             If this field is an instance RootInvConfig, this is the update frequency of the root inverse of the preconditioner.
             If this field is an instance EigenvalueCorrectionConfig, this is the update frequency of the eigenbasis of preconditioner.
