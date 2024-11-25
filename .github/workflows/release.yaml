@@ -1,7 +1,10 @@
 name: Release package on PyPI.
 
 on:
-  push:  # release:
+  push:
+    tags:
+      - v1.**
+  # release:
     #types: [published]
 
 jobs:
